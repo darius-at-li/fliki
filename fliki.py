@@ -42,7 +42,7 @@ def page_edit(page_name):
         if _page_exists(page_name):
             text = _read_page(page_name)
         else:
-            text = "= %s\n\nThis page does not exist yet. Replace this content and click Save to create it.\n\nThis wiki uses [[http://en.wikipedia.org/wiki/Creole_(markup)|creole]] dialect." % humanize(page_name).title()
+            text = "= %s\n\nThis page does not exist yet. Replace this content and click Save to create it.\n\nThis wiki uses [[http://en.wikipedia.org/wiki/Creole_(markup)|creole]] dialect. There is a local cheatsheet available [[../static/html/creole_cheat_sheet.html|here]]." % humanize(page_name).title()
         return render_template("page_edit.html", text=text, page_name=page_name, title=humanize(page_name).title(), fname=_page_name_to_filename(page_name))
     else:
         text = request.form["text"]

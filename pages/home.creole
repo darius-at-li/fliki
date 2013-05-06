@@ -1,3 +1,7 @@
 = Welcome
 
-This is fork of Fliki (https://github.com/fdb/fliki) which uses creole instead of markdown, and has some other enhancements as well.
+This is fork of Fliki ([[https://github.com/fdb/fliki]]), with the following changes:
+* uses creole instead of markdown
+* version control via git
+* ajax preview
+* better handling of page titles

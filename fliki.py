@@ -1,5 +1,5 @@
 from glob import glob
-from os.path import basename, exists, splitext, join
+from os.path import dirname, basename, exists, splitext, join
 from time import time
 import re
 
@@ -13,7 +13,11 @@ PAGES_DIRECTORY = "pages"
 
 RE_PAGE_NAME = re.compile("^[_a-zA-Z0-9\-]+$")
 
+GITREPOPATH=dirname(__file__)
+PAGEPATH='%s/%s' % (GITREPOPATH, PAGES_DIRECTORY)
+
 app = Flask(__name__)
+repo = git.Repo(GITREPOPATH)
 
 @app.route("/")
 def page_show_index():
@@ -38,8 +42,8 @@ def page_edit(page_name):
         if _page_exists(page_name):
             text = _read_page(page_name)
         else:
-            text = "# %s\n\nThis page does not exist yet. Replace this content and click Save to create it." % humanize(page_name)
-        return render_template("page_edit.html", text=text, page_name=page_name, title=humanize(page_name).title())
+            text = "= %s\n\nThis page does not exist yet. Replace this content and click Save to create it.\n\nThis wiki uses [[http://en.wikipedia.org/wiki/Creole_(markup)|creole]] dialect." % humanize(page_name).title()
+        return render_template("page_edit.html", text=text, page_name=page_name, title=humanize(page_name).title(), fname=_page_name_to_filename(page_name))
     else:
         text = request.form["text"]
         _write_page(page_name, text)
@@ -50,7 +54,13 @@ def page_list():
     """List all pages in the system."""
     pages = _list_pages()
     return render_template("page_list.html", pages=pages)
-    
+
+@app.route("/fragment", methods=["POST"])
+def fragment():
+  """Render a fragment of creole."""
+  text = request.form["fragment"]
+  return _convert_to_html(text)
+
 def _page_name_to_filename(page_name):
     if RE_PAGE_NAME.match(page_name):
         return join(PAGES_DIRECTORY, "%s.creole" % page_name.lower())
@@ -75,6 +85,8 @@ def _read_page(page_name):
 def _write_page(page_name, text):
     fname = _page_name_to_filename(page_name)
     open(fname, "w").write(text)
+    repo.index.add([fname])
+    repo.index.commit("edited %s" % page_name)
     
 def _list_pages():
     pages_glob = join(PAGES_DIRECTORY, "*.creole")
@@ -84,4 +96,4 @@ def _convert_to_html(text):
     return creole2html(unicode(text))
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8091)

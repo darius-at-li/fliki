@@ -5,6 +5,7 @@
   <title>{% set title=title or "Fliki" %}{{ title }}</title>
   <link rel="shortcut icon" href="{{ url_for("static", filename="favicon.ico") }}">
   <link rel="stylesheet" href="/static/css/style.css">
+  <script type="text/javascript" src="/static/js/jquery-1.8.3.js"></script>
 </head>
 <body>
   <div id="container">
@@ -23,6 +24,8 @@
     </div>
     <footer>
       Built with Fliki.
+      &bullet;
+      This wiki uses <a href="http://en.wikipedia.org/wiki/Creole_(markup)">creole</a>.
     </footer>
   </div>
 </body>

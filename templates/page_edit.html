@@ -1,9 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script type="text/javascript">
+    function render_wikitext () {
+        fragment = $('#wikitext').val();
+        // alert(fragment);
+        $.ajax({
+            type: 'POST',
+            url: '/fragment',
+            data: {fragment: fragment},
+            success: function(data) {
+                // alert("success: " + data);
+                $('#preview').html(data);
+                $('#edit').hide();
+                $('#preview_container').show();
+            },
+            error: function(data) {
+                alert("fail: " + data)
+            }
+        });
+    }
+</script>
+
 <form method="post">
-  <textarea name="text" cols="80" rows="20" autofocus>{{ text }}</textarea><br>
-  <input type="submit" value="Save"> or <a href="/{{ page_name }}">Cancel</a>
+    <div id="edit">
+          <textarea id="wikitext" name="text" cols="80" rows="20" autofocus>{{ text }}</textarea><br>
+          <input type="submit" value="Save">
+            or <a href="/{{ page_name }}">Cancel</a>
+            or <a href="javascript:render_wikitext();">Preview</a>
+    </div>
+    <div id="preview_container" style="display: none;">
+        <div id="preview"></div>
+        <hr>
+        <input type="submit" value="Save">
+        or <a href="/{{ page_name }}">Cancel</a>
+        or <a href="javascript:$('#preview_container').hide(); $('#edit').show();">Edit</a>
+    </div>
 </form>
 
 {% endblock %}

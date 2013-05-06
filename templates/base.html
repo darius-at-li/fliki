@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Fliki</title>
+  <title>{% set title=title or "Fliki" %}{{ title }}</title>
   <link rel="shortcut icon" href="{{ url_for("static", filename="favicon.ico") }}">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
   <div id="container">
     <header>
-      <h1>Fliki</h1>
+      <h1>{{ title }}</h1>
       <nav>
         <ul>
           <li><a href="/">Home</a></li>

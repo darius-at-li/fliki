@@ -21,6 +21,8 @@ PAGEPATH='%s/%s' % (GITREPOPATH, PAGES_DIRECTORY)
 
 DEFAULT_ENCODING = 'UTF8'
 
+DEVMODE = True
+
 app = Flask(__name__)
 repo = git.Repo(GITREPOPATH)
 
@@ -107,8 +109,9 @@ def _read_page(page_name):
 def _write_page(page_name, text):
     fname = _page_name_to_filename(page_name)
     open(fname, "w").write(text.encode(DEFAULT_ENCODING))
-    repo.index.add([fname])
-    repo.index.commit("edited %s" % page_name)
+    if not DEVMODE:
+        repo.index.add([fname])
+        repo.index.commit("edited %s" % page_name)
     
 def _list_pages():
     pages_glob = join(PAGES_DIRECTORY, "*.creole")

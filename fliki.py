@@ -2,6 +2,7 @@
 
 from glob import glob
 from os.path import dirname, basename, exists, splitext, join
+from string import digits, ascii_lowercase, ascii_uppercase
 from time import time
 import re
 
@@ -65,19 +66,36 @@ def fragment():
   text = request.form["fragment"]
   return _convert_to_html(text)
 
-def _page_name_to_filename(page_name):
-    if RE_PAGE_NAME.match(page_name):
-        return join(PAGES_DIRECTORY, "%s.creole" % page_name.lower())
-    else:
-        raise ValueError("Invalid page name %s." % page_name)
+def _page_name_to_filename(page, esc='~', asciibytes=6, okaychars=digits+ascii_lowercase+ascii_uppercase+' -._'):
+    result = []
+    for c in page:
+        if c in okaychars:
+            result.append(c)
+        else:
+            result.append(esc + '%06d' % ord(c))
+    return join(PAGES_DIRECTORY, "%s.creole" % ''.join(result))
 
 @app.template_filter()
 def humanize(page_name):
     """Clean up the page name to a human-readable name."""
     return page_name.replace("-", " ").capitalize()
     
-def _filename_to_page_name(fname):
-    return splitext(basename(fname))[0]
+def _filename_to_page_name(filename, esc='~', asciibytes=6):
+    result = []
+    i = 0
+    while i < len(filename):
+        if filename[i] == esc:
+            if filename[i+1] == esc:
+                result.append(esc)
+                i = i + 2
+            else:
+                substr = filename[i+1:i+asciibytes+1]
+                result.append(unichr(int(substr)))
+                i = i + asciibytes + 1
+        else:
+            result.append(filename[i])
+            i = i + 1
+    return splitext(basename(''.join(result)))[0]
 
 def _page_exists(page_name):
     return exists(_page_name_to_filename(page_name))

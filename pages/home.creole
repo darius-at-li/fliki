@@ -5,3 +5,4 @@ This is fork of Fliki ([[https://github.com/fdb/fliki]]), with the following cha
 * version control via git
 * ajax preview
 * better handling of page titles
+* ʇɹoddns ǝpoɔıun

@@ -1,3 +1,5 @@
+# coding: utf8
+
 from glob import glob
 from os.path import dirname, basename, exists, splitext, join
 from time import time
@@ -15,6 +17,8 @@ RE_PAGE_NAME = re.compile("^[_a-zA-Z0-9\-]+$")
 
 GITREPOPATH=dirname(__file__)
 PAGEPATH='%s/%s' % (GITREPOPATH, PAGES_DIRECTORY)
+
+DEFAULT_ENCODING = 'UTF8'
 
 app = Flask(__name__)
 repo = git.Repo(GITREPOPATH)
@@ -80,11 +84,11 @@ def _page_exists(page_name):
 
 def _read_page(page_name):
     fname = _page_name_to_filename(page_name)
-    return open(fname).read()
+    return unicode(open(fname).read(), DEFAULT_ENCODING)
 
 def _write_page(page_name, text):
     fname = _page_name_to_filename(page_name)
-    open(fname, "w").write(text)
+    open(fname, "w").write(text.encode(DEFAULT_ENCODING))
     repo.index.add([fname])
     repo.index.commit("edited %s" % page_name)
     
@@ -93,7 +97,7 @@ def _list_pages():
     return [_filename_to_page_name(fname) for fname in sorted(glob(pages_glob))]
 
 def _convert_to_html(text):
-    return creole2html(unicode(text))
+    return creole2html(text)
 
 if __name__=="__main__":
     app.run(debug=True, host='0.0.0.0', port=8091)
